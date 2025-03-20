@@ -7,6 +7,7 @@ interface TextFieldProps {
   onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
   type?: "text" | "password";
   isPassword?: boolean;
+  maxLength?: number; // Tambahkan properti maxLength
 }
 
 export const TextField: React.FC<TextFieldProps> = ({
@@ -15,6 +16,7 @@ export const TextField: React.FC<TextFieldProps> = ({
   onChange,
   type = "text",
   isPassword = false,
+  maxLength, // Terima maxLength sebagai properti
 }) => {
   const [showPassword, setShowPassword] = useState(false);
 
@@ -26,6 +28,7 @@ export const TextField: React.FC<TextFieldProps> = ({
           type={isPassword ? (showPassword ? "text" : "password") : type}
           value={value}
           onChange={onChange}
+          maxLength={maxLength} // Gunakan maxLength jika diberikan
           className="w-full outline-none bg-transparent text-lg font-medium"
         />
         {isPassword && (

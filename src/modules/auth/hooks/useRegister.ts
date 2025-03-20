@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import NavigationRoutes from "../../../routes/NavigationRoutes";
+import AuthService from "../services/authService";
 
 const useRegister = () => {
   const navigate = useNavigate();
@@ -11,8 +12,9 @@ const useRegister = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [role, setRole] = useState("job_seeker");
   const [agreeTerms, setAgreeTerms] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleRegister = (e: { preventDefault: () => void; }) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!fullName || !email || !phoneNumber || !password || !confirmPassword) {
@@ -30,12 +32,16 @@ const useRegister = () => {
       return;
     }
 
-    alert(`Registered successfully as ${role}!`);
-    goToLogin();
-  };
-
-  const goToLogin = () => {
-    navigate(NavigationRoutes.LOGIN);
+    setLoading(true);
+    try {
+      await AuthService.sendOtp(email);
+      navigate(NavigationRoutes.OTP_VERIFICATION, { state: { fullName, email, phoneNumber, password, role } });
+    } catch (error) {
+      alert("Failed to request OTP. Please try again.");
+      console.error("Error during registration process:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return {
@@ -54,7 +60,7 @@ const useRegister = () => {
     agreeTerms,
     setAgreeTerms,
     handleRegister,
-    goToLogin,
+    loading,
   };
 };
 
